@@ -19,7 +19,7 @@ function BottomButtons({ handleopenMenu, data }) {
         download(JSON.stringify(data), "FamilyTree.json", "text/plain");
     }
     return (
-        <div style={{ height: "14vh", marginTop: 5, justifyContent: "space-between", padding: 5 }}>
+        <div style={{ height: "13vh", marginTop: 5, justifyContent: "space-between", padding: 5 }}>
             <div style={{ display: "flex", width: "100%", justifyContent: "space-between", height: "48%" }}>
                 <Button style={{ width: "49%", textTransform: 'none' }} variant="outlined">Import Jason</Button>
                 <Button onClick={handleopenMenu} style={{ width: "49%", textTransform: 'none' }} variant="outlined">Add Family</Button>
