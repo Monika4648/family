@@ -1,5 +1,7 @@
 import { Button } from '@mui/material';
 import React from 'react'
+import { useDispatch } from 'react-redux';
+import { setopenModel } from '../store/reducers/rootSlice';
 
 function BottomButtons({ handleopenMenu, data }) {
 
@@ -10,6 +12,8 @@ function BottomButtons({ handleopenMenu, data }) {
         a.download = fileName;
         a.click();
     }
+    const dispatch = useDispatch()
+    const handleOpen = () => dispatch(setopenModel('print'))
 
     function onDownload(data) {
         download(JSON.stringify(data), "FamilyTree.json", "text/plain");
@@ -22,7 +26,7 @@ function BottomButtons({ handleopenMenu, data }) {
             </div>
             <div style={{ display: "flex", width: "100%", justifyContent: "space-between", height: "49%", marginTop: 2 }}>
                 <Button style={{ width: "49%", textTransform: 'none' }} onClick={e => onDownload(data)} variant="outlined">Export Jason</Button>
-                <Button style={{ width: "49%", textTransform: 'none' }} variant="outlined">Print Family Tree</Button>
+                <Button style={{ width: "49%", textTransform: 'none' }} onClick={handleOpen} variant="outlined">Print Family Tree</Button>
             </div>
         </div>
     )

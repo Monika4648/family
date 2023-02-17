@@ -1,34 +1,48 @@
 import React, { useState } from 'react'
-import Tree from './Tree';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useDispatch, useSelector } from 'react-redux';
-import { searchfamilydata } from '../store/reducers/rootSlice';
-function TreeNode({ node }) {
-  const { children, label } = node;
+import { addChildToFamily, searchfamilydata } from '../store/reducers/rootSlice';
+import { TreeItem, TreeView } from '@mui/lab';
 
-  const [showChildren, setShowChildren] = useState(false);
-  const { searchfamily, } = useSelector((state) => state.rootSlice)
-  const dispatch= useDispatch()
-  const handleClick = () => {
-    setShowChildren(!showChildren);
-    dispatch(searchfamilydata(label))
+export const ChartDiv = ({children}) => {
+  return (
+    <div  
+      style={{
+        padding : '4px 16px',
+        border : '1px solid black',
+        borderRadius : '4px',
+        display : 'inline-block'
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+function TreeNode({ node }) {
+  const renderTree = (nodes) => (
+    <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.Name}>
+      {Array.isArray(nodes.children)
+        ? nodes.children.map((node) => renderTree(node))
+        : null}
+    </TreeItem>
+  );
+  const dispatch = useDispatch()
+
+  const handleSelect = (event, nodeIds) => {
+    dispatch(addChildToFamily(nodeIds))
   };
   return (
     <>
-      <div onClick={handleClick} style={{ marginBottom: "10px" }}>
-        <div style={{ display: 'flex', alignItems: 'center', backgroundColor:
-         searchfamily !== "" ? label.includes(searchfamily) ? 'lightgray' : 'default' 
-          : 'default'}}>
-          {showChildren ? <ExpandMoreIcon /> : <ChevronRightIcon />}
-          <FolderOpenIcon color='yellow' />
-          <span >{label}</span>
-        </div>
-      </div>
-      <ul style={{ paddingLeft: "10px" }}>
-        {showChildren && <Tree treeData={children} />}
-      </ul>
+      <TreeView
+        aria-label="rich object"
+        defaultCollapseIcon={<ExpandMoreIcon />}
+        defaultExpanded={['root']}
+        onNodeSelect={handleSelect}
+        defaultExpandIcon={<ChevronRightIcon />}
+      >
+        {renderTree(node)}
+      </TreeView>
     </>
   );
 }

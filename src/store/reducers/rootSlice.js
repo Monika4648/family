@@ -1,11 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { buildTree } from '../../components/functions'
 
 const initialState = {
-  wholeFamily: [  ],
-  addChild: '',
-  treedata: [],
-  searchfamily:''
+  wholeFamily: [],
+  addparentId: '',
+  searchfamily: '',
+  treedata: [
+    { id: 1, Name: 'Great Grand Father', parent_id: null },
+  ],
+  model: ''
 }
 
 export const rootSlice = createSlice({
@@ -14,17 +16,23 @@ export const rootSlice = createSlice({
   reducers: {
     addFamilyState: (state, action) => {
       state.wholeFamily = [...state.wholeFamily, action.payload]
-      state.treedata = buildTree([...state.wholeFamily, action.payload])
     },
     addChildToFamily: (state, action) => {
-      state.addChild = action.payload
+      state.addparentId = action.payload
     },
     searchfamilydata: (state, action) => {
       state.searchfamily = action.payload
     },
+    setopenModel: (state, action) => {
+      state.model = action.payload
+    },
+    settreedata: (state, action) => {
+      state.treedata = [...state.treedata, action.payload]
+    },
   },
 })
 
-export const { addFamilyState, addChildToFamily,searchfamilydata } = rootSlice.actions
+export const { addFamilyState, addChildToFamily,
+  searchfamilydata, settreedata, setopenModel } = rootSlice.actions
 
 export default rootSlice.reducer

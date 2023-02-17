@@ -1,36 +1,60 @@
 import { Divider } from '@mui/material'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setopenModel } from '../store/reducers/rootSlice'
+import { familyInfodata } from './FamilyDetailsForm'
+import { TreePreviewModal } from './TreePreviewModal'
 
 function RightComponents() {
+    const { treedata,model } = useSelector((state) => state.rootSlice)
+
+    const { addparentId } = useSelector((state) => state.rootSlice)
+    const [filterdata, setfilterdata] = useState()
+    const dispatch = useDispatch()
+    useEffect(() => {
+        setfilterdata(treedata.filter(item => item.id === addparentId)[0])
+    }, [addparentId, treedata])
+    const handleClose = () => dispatch(setopenModel(''))
+    const Label = ({ label, value }) => {
+        return (
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    margin: '10px',
+                    width: '100%',
+                }}
+            >
+                <div
+                    style={{
+                        minWidth: '25%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                    }}
+                >
+                    {label} <span>:</span>
+                </div>
+                {label !== "Family Photo" ? <div style={{ marginLeft: '8px' }}>{value}</div> : <div>{value?.map(src => <img src={src} alt={"Family"} key={src} width={100} />)}</div>}
+            </div>
+        )
+    }
     return (
         <div style={{ width: "59%", backgroundColor: "white", height: "80vh", border: "2px solid lightblue", borderRadius: 10 }}>
             <div style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
                 <h4>Family Details</h4>
             </div>
             <Divider />
-            <div style={{ display: "flex", width: "100%" }}>
-                <div style={{ width: "30%", height: "100%", paddingLeft: 40 }}>
-                    <ul>Name</ul>
-                    <ul>Spouse</ul>
-                    <ul>Location</ul>
-                    <ul>Birth Year</ul>
-                    <ul>Present Address</ul>
-                    <ul>Famiy Photo</ul>
+                <div style={{ height: "100%", paddingLeft: 100 }}>
+                    {filterdata && Object.keys(familyInfodata).map(key => {
+                        return (
+                            <>
+                                {filterdata[key] && <Label key={key} label={key} value={filterdata[key]} />}
+                            </>
+                        )
+                    })}
                 </div>
-                <div style={{ width: "70%", height: "100%" }}>
-                    <ul>:Son of Grandfather</ul>
-                    <ul>:Spouse name</ul>
-                    <ul>:Bhopal</ul>
-                    <ul>:1980</ul>
-                    <ul>:123 Patel Road Road Bhopal</ul>
-                    <ul>:
-                        <div style={{ display: "flex", bottom: 12 }}>
-                            <div style={{ height: 100, width: 120, border: "1px solid black", marginRight: 50, marginLeft: 20 }}></div>
-                            <div style={{ height: 100, width: 120, border: "1px solid black" }}></div>
-                        </div>
-                    </ul>
-                </div>
-            </div>
+                <TreePreviewModal open={model==='print'} handleClose={handleClose} />
         </div>
     )
 }

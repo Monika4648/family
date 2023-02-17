@@ -4,8 +4,8 @@ import TreeNode from './TreeNode';
 function Tree({ treeData }) {
     return (
       <ul>
-        {treeData.map((node) => (
-          <TreeNode node={node} key={node.key} />
+        {treeData.map((node,index) => (
+          <TreeNode node={node} key={index} />
         ))}
       </ul>
     );

@@ -1,12 +1,20 @@
 import { Box, Button, TextField } from '@mui/material'
-import React, { useEffect} from 'react'
+import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { addFamilyState } from '../store/reducers/rootSlice';
+import { settreedata } from '../store/reducers/rootSlice';
 
 export function createuid() {
   return (performance.now().toString(36) + Math.random().toString(36)).replace(/\./g, "");
 };
-function FamilyDetailsForm({ setFamilyInfo,  handleClose }) {
+export const familyInfodata = {
+  "Name": "people1",
+  "Spouse": "people2",
+  "Location": "india",
+  "Birth Year": "1234",
+  "Present Address": "adfsaf",
+  "Family Photo": null
+}
+function FamilyDetailsForm({ handleClose }) {
   const style = {
     position: 'absolute',
     top: '50%',
@@ -18,51 +26,38 @@ function FamilyDetailsForm({ setFamilyInfo,  handleClose }) {
     boxShadow: 24,
     p: 4,
   };
-  const { wholeFamily,  } = useSelector((state) => state.rootSlice)
-  const initialFamilyInfoState = {
-    "Name": "people1",
-    "Spouse": "people2",
-    "Location": "india",
-    "Birth Year": "1234",
-    "Present Address": "adfsaf",
-    // "Label 1": "asdfas",
-    // "Label 2": "asdfas",
-    "Family Photo": null
-  }
-  function buildTree(array) {
-    let tree = []
-    for (let i = 0; i < array.length; i++) {
-      if (array[i].parent_id) {
-        let parent = array.filter(elem => elem.id === array[i].parent_id).pop()
-        parent.children.push(array[i])
-        console.log(parent, 'p')
-      } else {
-        tree.push(array[i])
-      }
-    }
-    return tree
-  }
+
+  const { addparentId } = useSelector((state) => state.rootSlice)
+
+  const [familyInfo, setFamilyInfo] = React.useState(familyInfodata)
   const dispatch = useDispatch()
   const settest = (e) => {
     e.preventDefault()
     const id = createuid()
-    console.log('settest')
-    dispatch(addFamilyState({ id, data: 'hello', parent_id: 1, children: [] }))
-  
+    dispatch(settreedata({ id, parent_id: addparentId, ...familyInfo }))
     handleClose()
   }
-useEffect(() => {
-  const ar = buildTree(wholeFamily)
-  console.log(ar,'e')
-}, [wholeFamily])
-
 
   const setFamilyInfoState = e => {
     const { name, value } = e.target
     setFamilyInfo(prevState => {
+      return { ...prevState, [name]: value }
+    })
+  }
+  const onPicUpload = e => {
+    const picUrls = []
+
+    const allSelectedImgs = e.target.files
+
+    for (let index = 0; index < allSelectedImgs.length; index++) {
+      const currentImg = allSelectedImgs[index];
+      picUrls.push(URL.createObjectURL(currentImg))
+    }
+
+    picUrls.length > 0 && setFamilyInfo(prevState => {
       return {
         ...prevState,
-        [name]: value
+        "Family Photo": picUrls
       }
     })
   }
@@ -76,8 +71,23 @@ useEffect(() => {
           gap: '10px'
         }}
       >
-        {Object.keys(initialFamilyInfoState).map((fieldKey, i) => fieldKey !== "Family Photo" && <TextField name={fieldKey} variant='outlined' label={fieldKey} onChange={setFamilyInfoState} />)}
+        {Object.keys(familyInfodata).map((fieldKey, i) => fieldKey !== "Family Photo" &&
+          <TextField name={fieldKey} variant='outlined' label={fieldKey} onChange={setFamilyInfoState} />)}
+
+        <div>
+          {familyInfo["Family Photo"] && familyInfo["Family Photo"].map(src => <img style={{ padding: '5px' }} src={src} alt='family' key={src} width={100} />)}
+        </div>
         <div style={{ textAlign: 'center' }} >
+          <Button variant="contained" component="label" sx={{ textTransform: 'capitalize' }} >
+            Upload Pictures
+            <input
+              type='file'
+              onChange={onPicUpload}
+              hidden
+              multiple
+              accept="image/*"
+            />
+          </Button>
           <Button variant="contained" type='submit'>Add</Button>
         </div>
       </form>
